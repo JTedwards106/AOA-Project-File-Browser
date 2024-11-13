@@ -1,0 +1,28 @@
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+import os
+
+# Set your Azure credentials here
+endpoint = "https://<your-azure-endpoint>"
+key = "<your-azure-key>"
+
+# Initialize the Text Analytics client
+credential = AzureKeyCredential(key)
+client = TextAnalyticsClient(endpoint=endpoint, credential=credential)
+
+def summarize_file_with_azure(file_path):
+    try:
+        # Read the file content
+        with open(file_path, 'r', encoding='utf-8', errors='ignore') as file:
+            content = file.read()
+
+        # Call Azure Text Analytics for text summarization or key phrase extraction
+        response = client.extract_key_phrases([content])[0]
+        if response.is_error:
+            return "Error summarizing the file."
+
+        key_phrases = ", ".join(response.key_phrases)
+        return f"Key phrases extracted: {key_phrases}"
+
+    except Exception as e:
+        return f"Azure summarization failed: {str(e)}"
